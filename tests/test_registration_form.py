@@ -1,12 +1,9 @@
-from datetime import date
-
 import allure
 from jenkins_hw12_v1.pages.registration_page import RegistrationForm
 from jenkins_hw12_v1.data import users
 
-
-def test_registration_with_preset_user():
-    form = RegistrationForm()
+def test_registration_with_preset_user(app):
+    form = RegistrationForm(app)
 
     with allure.step("Open registration page"):
         form.open()
