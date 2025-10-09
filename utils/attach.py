@@ -3,10 +3,12 @@ import os
 import allure
 from allure_commons.types import AttachmentType
 
+# Скриншоты
 def add_screenshot(browser):
     png = browser.driver.get_screenshot_as_png()
-    allure.attach(png, name='screenshot', attachment_type=AttachmentType.PNG, extension='.png')
+    allure.attach(body=png, name='screenshot', attachment_type=AttachmentType.PNG, extension='.png')
 
+# логи
 def add_logs(browser):
     # работает только если драйвер поддерживает логи и включены prefs
     try:
@@ -19,6 +21,7 @@ def add_logs(browser):
         # просто молча пропускаем, чтобы teardown не падал
         pass
 
+# html-код страницы
 def add_html(browser):
     html = browser.driver.page_source
     allure.attach(html, 'page_source', AttachmentType.HTML, '.html')
