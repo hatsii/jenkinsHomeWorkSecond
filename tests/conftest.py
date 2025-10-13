@@ -38,6 +38,7 @@ def setup_browser(request):
     # capabilities for selenoid
     options.set_capability("browserName", "chrome")
     options.set_capability("browserVersion", browser_version)
+    options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
     options.set_capability(
         "selenoid:options",
         {
