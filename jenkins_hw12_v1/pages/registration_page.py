@@ -90,15 +90,15 @@ class RegistrationForm:
         self.date_input.click()
         self.browser.element('.react-datepicker').should(be.visible)
 
-        # месяц по value (0..11) — не зависит от локали
+        # месяц по value
         self.browser.element('.react-datepicker__month-select').click()
         self.browser.element(f'.react-datepicker__month-select option[value="{d.month - 1}"]').click()
 
-        # год по value (например, "2000")
+        # год по value
         self.browser.element('.react-datepicker__year-select').click()
         self.browser.element(f'.react-datepicker__year-select option[value="{d.year}"]').click()
 
-        # день в рамках текущего месяца
+        # день
         self.browser.element(
             f'.react-datepicker__day--0{d.day:02d}:not(.react-datepicker__day--outside-month)'
         ).click()

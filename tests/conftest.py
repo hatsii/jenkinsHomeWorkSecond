@@ -2,21 +2,20 @@
 import os
 import pytest
 import allure
-from allure_commons import fixture
 from allure_commons.types import AttachmentType
 
 from selene import Browser, Config
-from selenium.webdriver import Remote, ChromeOptions, FirefoxOptions
+from selenium.webdriver import Remote
 from selenium.webdriver.remote.client_config import ClientConfig
+from selenium.webdriver.chrome.options import Options
 from utils import attach
 from dotenv import load_dotenv
 
-@pytest.fixture (scope="session",autouse=True)
-def load_env():
-    load_dotenv()
+DEFAULT_BROWSER_VERSION = "100.0"
 
 
 def pytest_addoption(parser):
+    parser.addoption("--browser_version", default="128.0", help="Chrome version for Selenoid")
     parser.addoption(
         "--browser",
         help="Браузер, в котором будут тесты",
@@ -25,45 +24,40 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture(scope='function')
-def app(request):
-    browser_name = request.config.getoption("--browser")
+@pytest.fixture(scope="session", autouse=True)
+def load_env():
+    load_dotenv()
 
-    # --- опции под выбранный браузер ---
-    if browser_name == "chrome":
-        opts = ChromeOptions()
-        # консольные логи есть только у Chrome через goog:loggingPrefs
-        opts.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
-    else:
-        opts = FirefoxOptions()
-        # для Firefox не трогаем goog:loggingPrefs
 
-    opts.set_capability('browserName', browser_name)
+@pytest.fixture(scope="function")
+def setup_browser(request):
+    browser_version = request.config.getoption('--browser_version')
+    browser_version = browser_version if browser_version != "" else DEFAULT_BROWSER_VERSION
 
-    # версию лучше не пинить. Если нужно — задавай через ENV:
-    version_env = os.getenv('BROWSER_VERSION')
-    if version_env:
-        opts.set_capability('browserVersion', version_env)
+    options = Options()
+    # capabilities for selenoid
+    options.set_capability("browserName", "chrome")
+    options.set_capability("browserVersion", browser_version)
+    options.set_capability(
+        "selenoid:options",
+        {
+            "enableVNC": True,
+            "enableVideo": True,
+        },
+    )
 
-    opts.set_capability('acceptInsecureCerts', True)
-    opts.set_capability('selenoid:options', {
-        'enableVNC': True,
-        'enableVideo': True,
-        'name': f'test_session_{browser_name}',
-    })
-
-    host = os.getenv('SELENOID_HOST', 'selenoid.autotests.cloud')
-    remote_url = f'https://{host}/wd/hub'
+    host = os.getenv("SELENOID_HOST", "selenoid.autotests.cloud")
+    remote_url = f"https://{host}/wd/hub"
 
     cfg = ClientConfig(
         remote_server_addr=remote_url,
-        username=os.getenv('LOGIN'),
-        password=os.getenv('PASSWORD'),
+        username=os.getenv("LOGIN"),
+        password=os.getenv("PASSWORD"),
     )
 
-    driver = Remote(command_executor=remote_url, options=opts, client_config=cfg)
+    driver = Remote(command_executor=remote_url, options=options, client_config=cfg)
 
-    # Маячок
+    # debug info в Allure и консоль
     info = [
         f"executor: {remote_url}",
         f"session_id: {driver.session_id}",
@@ -74,16 +68,19 @@ def app(request):
     allure.attach("\n".join(info), "driver_info", AttachmentType.TEXT, ".txt")
     print("\n".join(info))
 
-    app = Browser(Config(
-        driver=driver,
-        base_url='https://demoqa.com',
-        window_width=1080,
-        window_height=1200,
-        timeout=10,
-    ))
+    app = Browser(
+        Config(
+            driver=driver,
+            base_url="https://demoqa.com",
+            window_width=1080,
+            window_height=1200,
+            timeout=10,
+        )
+    )
 
     yield app
 
+    # вложения в Allure (если падение — пригодится)
     attach.add_html(app)
     attach.add_screenshot(app)
     attach.add_logs(app)

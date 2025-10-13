@@ -2,8 +2,8 @@ import allure
 from jenkins_hw12_v1.pages.registration_page import RegistrationForm
 from jenkins_hw12_v1.data import users
 
-def test_registration_with_preset_user(app):
-    form = RegistrationForm(app)
+def test_registration_with_preset_user(setup_browser):
+    form = RegistrationForm(setup_browser)
 
     with allure.step("Open registration page"):
         form.open()
