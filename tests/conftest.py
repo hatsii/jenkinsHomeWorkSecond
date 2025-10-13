@@ -2,12 +2,18 @@
 import os
 import pytest
 import allure
+from allure_commons import fixture
 from allure_commons.types import AttachmentType
 
 from selene import Browser, Config
 from selenium.webdriver import Remote, ChromeOptions, FirefoxOptions
 from selenium.webdriver.remote.client_config import ClientConfig
 from utils import attach
+from dotenv import load_dotenv
+
+@pytest.fixture (scope="session",autouse=True)
+def load_env():
+    load_dotenv()
 
 
 def pytest_addoption(parser):
@@ -51,8 +57,8 @@ def app(request):
 
     cfg = ClientConfig(
         remote_server_addr=remote_url,
-        username=os.getenv('SELENOID_USER', 'user1'),
-        password=os.getenv('SELENOID_PASS', '1234'),
+        username=os.getenv('LOGIN'),
+        password=os.getenv('PASSWORD'),
     )
 
     driver = Remote(command_executor=remote_url, options=opts, client_config=cfg)
