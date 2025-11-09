@@ -26,7 +26,7 @@ class User:
     birth_date: date
     subjects: List[str] = field(default_factory=list)
     hobbies: List[Hobby] = field(default_factory=list)
-    picture: str = ''           # имя файла в /resources (например, 'cat.png')
+    picture: str = ''
     address: str = ''
     state: str = ''
     city: str = ''

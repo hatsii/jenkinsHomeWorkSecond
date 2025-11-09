@@ -3,8 +3,8 @@ from datetime import date
 from selene import be, have, command, by
 from selene import Browser
 
-from jenkins_hw12_v1.models.user import User, Gender, Hobby
-from jenkins_hw12_v1.utils import resources
+from jenkinshomeworksecond.models.user import User, Gender, Hobby
+from jenkinshomeworksecond.utils import resources
 
 
 class RegistrationForm:

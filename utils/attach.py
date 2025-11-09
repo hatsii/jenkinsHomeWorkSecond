@@ -10,7 +10,6 @@ def add_screenshot(browser):
 
 # логи
 def add_logs(browser):
-    # работает только если драйвер поддерживает логи и включены prefs
     try:
         if hasattr(browser.driver, 'get_log'):
             logs = browser.driver.get_log('browser')  # может кинуть ошибку — ловим ниже
@@ -18,7 +17,6 @@ def add_logs(browser):
             if text.strip():
                 allure.attach(text, 'browser_logs', AttachmentType.TEXT, '.log')
     except Exception:
-        # просто молча пропускаем, чтобы teardown не падал
         pass
 
 # html-код страницы
