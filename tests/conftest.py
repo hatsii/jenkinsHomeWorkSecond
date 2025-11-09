@@ -17,6 +17,8 @@ def pytest_addoption(parser):
         default='128.0'
     )
 
+    parser.addoption("--browser", action="store", default="chrome", help="Browser name")
+
 
 @pytest.fixture(scope='session', autouse=True)
 def load_env():
