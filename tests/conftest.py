@@ -52,8 +52,8 @@ def setup_browser(request):
 
     cfg = ClientConfig(
         remote_server_addr=remote_url,
-        username=os.getenv("LOGIN"),
-        password=os.getenv("PASSWORD"),
+        username=os.getenv("SELENOID_LOGIN"),
+        password=os.getenv("SELENOID_PASS"),
     )
 
     driver = Remote(command_executor=remote_url, options=options, client_config=cfg)
